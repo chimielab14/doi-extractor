@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extract DOI from Bibliography</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f3e7e9, #e3eeff);
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #4a90e2;
+            text-align: center;
+        }
+        p.description {
+            text-align: center;
+            max-width: 800px;
+            margin: auto;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #4caf50;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #fff;
+            padding: 5px 10px;
+            margin: 4px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <p style="text-align:center;font-weight:bold;">Crafted by Mr. May Abdelghani</p>
+    <p style="text-align:center;font-weight:bold;">This page allows you to enter your bibliography, and it will extract all DOI numbers found within it, displaying them as a list</p>
+    <h1>📚 Extract DOI from Bibliography 📚</h1>
+    <textarea id="bibliographyInput" placeholder="Paste your bibliography here..."></textarea>
+    <button onclick="extractDOIs()">🔍 Extract DOIs</button>
+    <button onclick="copyDOIs()">📋 Copy DOIs</button>
+    <button onclick="resetFields()">🔄 Reset</button>
+    <h2>📑 Extracted DOIs:</h2>
+    <ul id="doiList"></ul>
+
+    <script>
+        function extractDOIs() {
+            const bibliography = document.getElementById('bibliographyInput').value;
+            const doiRegex = /10\.\d{4,9}\/[-._;()/:A-Z0-9]+/gi;
+            const matches = bibliography.match(doiRegex);
+            const doiList = document.getElementById('doiList');
+            doiList.innerHTML = '';
+
+            if (matches) {
+                const uniqueDOIs = [...new Set(matches)];
+                uniqueDOIs.forEach(doi => {
+                    const listItem = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.href = `https://doi.org/${doi}`;
+                    link.target = '_blank';
+                    link.textContent = doi;
+                    listItem.appendChild(link);
+                    doiList.appendChild(listItem);
+                });
+            } else {
+                const listItem = document.createElement('li');
+                listItem.textContent = 'No DOIs found.';
+                doiList.appendChild(listItem);
+            }
+        }
+
+        function copyDOIs() {
+            const doiListItems = document.querySelectorAll('#doiList li a');
+            if (doiListItems.length === 0) {
+                alert('No DOIs to copy.');
+                return;
+            }
+            const doiTexts = Array.from(doiListItems).map(a => a.textContent).join('\n');
+            navigator.clipboard.writeText(doiTexts).then(() => {
+                alert('DOIs copied to clipboard!');
+            }, () => {
+                alert('Failed to copy DOIs.');
+            });
+        }
+
+        function resetFields() {
+            document.getElementById('bibliographyInput').value = '';
+            document.getElementById('doiList').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
